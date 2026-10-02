@@ -1,322 +1,159 @@
-(() => {
-  let fetched = false, fetching = false, waiting = false
-  let datas
-  const path = config.root + 'search.json'
-  const input = getElement('#search-input')
-  const nav = getElement('nav')
-  const activeHolder = config.search.activeHolder
-  const blurHolder = config.search.blurHolder
-  const noResult = config.search.noResult
-  const popup = getElement('.search-popup')
-  function fetechData() {
-    fetching = true
-    fetch(path)
-      .then(response => response.text())
-      .then(res => {
-        fetched = true
-        datas = JSON.parse(res)
-        if (waiting === true) {
-          inputEventFunction()
-        }
-      }).catch(() => fetching = false)
-  }
-  if (config.search.preload) {
-    fetechData()
-  }
-  function getIndexByWord(word, text, caseSensitive) {
-    let wordLen = word.length
-    if (wordLen === 0) return []
-    let startPosition = 0
-    let position = []
-    let index = []
-    if (!caseSensitive) {
-      text = text.toLowerCase()
-      word = word.toLowerCase()
-    }
-    while ((position = text.indexOf(word, startPosition)) > -1) {
-      index.push({
-        position: position,
-        word: word
-      })
-      startPosition = position + wordLen
-    }
-    return index
-  }
-  function mergeIntoSlice(start, end, index, searchText) {
-    let item = index[index.length - 1]
-    let position = item.position
-    let word = item.word
-    let hits = []
-    let searchTextCountInSlice = 0
-    while (position + word.length <= end && index.length !== 0) {
-      if (word === searchText) {
-        searchTextCountInSlice++
-      }
-      hits.push({
-        position: position,
-        length: word.length
-      })
-      let wordEnd = position + word.length
-      index.pop()
-      while (index.length !== 0) {
-        item = index[index.length - 1]
-        position = item.position
-        word = item.word
-        if (wordEnd > position) {
-          index.pop()
-        } else {
-          break
-        }
-      }
-    }
-    return {
-      hits: hits,
-      start: start,
-      end: end,
-      TextCount: searchTextCountInSlice
-    }
-  }
-  function highlightKeyword(text, slice) {
-    let result = ''
-    let prevEnd = slice.start
-    slice.hits.forEach(hit => {
-      result += text.substring(prevEnd, hit.position)
-      let end = hit.position + hit.length
-      result += `<nobr class="search-keyword">${text.substring(hit.position, end)}</nobr>`
-      prevEnd = end
-    })
-    result += text.substring(prevEnd, slice.end)
-    return result
-  }
-  function inLoading() {
-    getElement('#search-result').innerHTML = '<div id="loading"><div><p>Loading...</p></div></div>'
-  }
-  function onPopupClose() {
-    if (document.querySelector('.up') && document.querySelector('.closed')) {
-      getElement('.navBtn').classList.remove('expanded')
-    }
-    getElement('#search-result').querySelectorAll('a').
-      forEach((item) => item.setAttribute('tabindex', -1))
-    document.body.classList.remove('blur')
-    popup.classList.remove('open')
-  }
-  function proceedSearch() {
-    document.body.classList.add('blur')
-    if (document.querySelector('.up') && document.querySelector('.closed')) {
-      getElement('.navBtn').classList.add('expanded')
-    }
-    getElement('#search-result').removeAttribute('tabindex')
-    popup.classList.add('open')
-    if (fetched === true) {
-      popup.innerHTML = "<div id='search-result'></div>"
-      document.getElementById('search-result').innerHTML = ''
-    } else {
-      inLoading()
-    }
-  }
-  function inputEventFunction() {
-    let searchText = input.value.trim().toLowerCase()
-    if (!searchText.length) {
-      input.placeholder = activeHolder
-      onPopupClose()
-      return
-    }
-    proceedSearch()
-    if (fetched === false) {
-      return
-    }
-    let keywords = searchText.split(/[-\s]+/)
-    if (keywords.length > 1) {
-      keywords.push(searchText)
-    }
-    let resultItems = []
-    if (searchText.length > 0) {
-      datas.forEach(data => {
-        if (!data.title) {
-          return
-        }
-        let TextCount = 0, TitleCount = 0, ContentCount = 0
-        let title = data.title.trim()
-        let titleInLowerCase = title.toLowerCase()
-        let content = data.content ? data.content.trim().replace(/<[^>]+>/g, '') : ''
-        let contentInLowerCase = content.toLowerCase()
-        let articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/')
-        let indexOfTitle = []
-        let indexOfContent = []
-        keywords.forEach(keyword => {
-          let hitInTitle = getIndexByWord(keyword, titleInLowerCase, false)
-          let hitInContent = getIndexByWord(keyword, contentInLowerCase, false)
-          indexOfTitle = indexOfTitle.concat(hitInTitle)
-          indexOfContent = indexOfContent.concat(hitInContent)
-          if (hitInTitle.length > 0 || hitInContent.length > 0) {
-            TextCount++
-          }
-          if (hitInTitle.length > 0) {
-            TitleCount++
-          }
-          if (hitInTitle.length > 0 || hitInContent.length > 0) {
-            ContentCount++
-          }
-        })
-        if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
-          [indexOfTitle, indexOfContent].forEach(index => {
-            index.sort((itemLeft, itemRight) => {
-              if (itemRight.position !== itemLeft.position) {
-                return itemRight.position - itemLeft.position
-              }
-              return itemLeft.word.length - itemRight.word.length
-            })
-          })
+// Newspaper Theme - Search Functionality
 
-          let slicesOfTitle = []
-          let slicesOfContent = []
-          if (indexOfTitle.length !== 0) {
-            let tmp = mergeIntoSlice(0, title.length, indexOfTitle, searchText)
-            slicesOfTitle.push(tmp)
-          }
-          let upperBound = parseInt(config.top_n_per_article, 10)
-          if (upperBound >= 0) {
-            slicesOfContent = slicesOfContent.slice(0, upperBound)
-          }
-          let resultItem = ''
-          if (slicesOfTitle.length !== 0) {
-            resultItem += `<a href="${articleUrl}" class="recent-post"><b class="search-result-title">${highlightKeyword(title, slicesOfTitle[0])}</b>`
-          } else {
-            resultItem += `<a href="${articleUrl}" class="recent-post"><b class="search-result-title">${title}</b>`
-          }
-          if (indexOfContent !== null && indexOfContent.length !== 0) {
-            let item = indexOfContent[indexOfContent.length - 1]
-            let position = item.position
-            let word = item.word
-            let start = position - 20
-            let end = position + 80
-            if (start < 0) {
-              start = 0
-            }
-            if (end < position + word.length) {
-              end = position + word.length
-            }
-            if (end > content.length) {
-              end = content.length
-            }
-            let tmp = mergeIntoSlice(start, end, indexOfContent, searchText)
-            resultItem += `<p class="search-result">${highlightKeyword(content, tmp)}...</p>`
-          } else {
-            resultItem += `<p class="search-result">${content}...</p>`
-          }
-          resultItem += '</a>'
-          resultItems.push({
-            item: resultItem,
-            TextCount: TextCount,
-            TitleCount: TitleCount,
-            ContentCount: ContentCount,
-            id: resultItems.length
-          })
-        }
-      })
+document.addEventListener("DOMContentLoaded", function () {
+  initSearch();
+});
+
+function initSearch() {
+  const searchToggle = document.querySelector(".search-toggle");
+  const searchOverlay = document.querySelector(".search-overlay");
+  const searchInput = document.querySelector(".search-input");
+  const searchResults = document.querySelector(".search-results");
+  const searchClose = document.querySelector(".search-close");
+
+  if (!searchToggle || !searchOverlay) return;
+
+  // 1. 辅助翻译函数
+  function t(text) {
+    if (window.i18n && typeof window.i18n.get === "function") {
+      return window.i18n.get(text);
     }
-    popup.scroll({ top: 0, left: 0 })
-    let resultList = getElement('#search-result')
-    if (resultItems.length === 0) {
-      resultList.innerHTML =
-        `<div id="no-result"><p>${format(noResult, `<b>${input.value}</b>`)}</p></div>`
+    return text;
+  }
+
+  // Toggle search overlay
+  searchToggle.addEventListener("click", function () {
+    searchOverlay.classList.add("active");
+    searchInput.focus(); // Focus on input when opened
+  });
+
+  // Close search overlay
+  searchClose.addEventListener("click", function () {
+    searchOverlay.classList.remove("active");
+    searchInput.value = "";
+    searchResults.innerHTML = "";
+  });
+
+  // Close on escape key
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && searchOverlay.classList.contains("active")) {
+      searchOverlay.classList.remove("active");
+      searchInput.value = "";
+      searchResults.innerHTML = "";
+    }
+  });
+
+  // Close when clicking outside search container
+  searchOverlay.addEventListener("click", function (e) {
+    if (e.target === searchOverlay) {
+      searchOverlay.classList.remove("active");
+      searchInput.value = "";
+      searchResults.innerHTML = "";
+    }
+  });
+
+  // Search functionality
+  let searchIndex;
+
+  // Load search index
+  fetch("/search.json")
+    .then((response) => response.json())
+    .then((data) => {
+      searchIndex = data;
+    })
+    .catch((error) => {
+      console.error("Error loading search index:", error);
+    });
+
+  // Handle search input
+  searchInput.addEventListener("input", function () {
+    const query = this.value.trim().toLowerCase();
+
+    // Clear results if query is too short
+    if (query.length < 2) {
+      searchResults.innerHTML = "";
+      return;
+    }
+
+    if (!searchIndex) {
+      // ★★★ 修改点 1：翻译错误提示 ★★★
+      searchResults.innerHTML = `<div class="search-no-results">${t("搜索索引未加载")}</div>`;
+      return;
+    }
+
+    const results = [];
+
+    // Search through posts
+    searchIndex.forEach((post) => {
+      // Check if title, content or tags match query
+      const titleMatch = post.title && post.title.toLowerCase().includes(query);
+      const contentMatch =
+        post.content && post.content.toLowerCase().includes(query);
+      // Check if tags exist before filtering
+      const tagsMatch =
+        post.tags &&
+        Array.isArray(post.tags) &&
+        post.tags.some((tag) => tag.toLowerCase().includes(query));
+
+      if (titleMatch || contentMatch || tagsMatch) {
+        results.push(post);
+      }
+    });
+
+    // Display results
+    displaySearchResults(results, query);
+  });
+
+  function displaySearchResults(results, query) {
+    if (results.length === 0) {
+      // ★★★ 修改点 2：翻译无结果提示 ★★★
+      searchResults.innerHTML = `<div class="search-no-results">${t("没有找到相关结果")}</div>`;
+      return;
+    }
+
+    // ★★★ 修改点 3：处理带有变量的翻译 ★★★
+    // 逻辑：如果是英文模式，拼接英文格式；否则用中文格式
+    let countHtml = "";
+    if (window.i18n && window.i18n.isEn()) {
+      countHtml = `Found ${results.length} results`;
     } else {
-      resultItems.sort((Left, Right) => {
-        if (Left.TextCount !== Right.TextCount) {
-          return Right.TextCount - Left.TextCount
-        } else if (Left.TitleCount !== Right.TitleCount) {
-          return Right.TitleCount - Left.TitleCount
-        } else if (Left.ContentCount !== Right.ContentCount) {
-          return Right.ContentCount - Left.ContentCount
-        }
-        return Right.id - Left.id
-      })
-      let searchResultList = ""
-      resultItems.forEach(result => {
-        searchResultList += result.item
-      })
-      resultList.innerHTML = searchResultList
+      countHtml = `找到 ${results.length} 个结果`;
     }
-    if (typeof pjax !== 'undefined') {
-      pjax.refresh(resultList)
-    }
-  }
-  input.addEventListener('keypress', event => {
-    if (event.key === 13) {
-      inputEventFunction()
-    }
-  })
-  let lastEvent = 0
-  function StartSearch() {
-    nav.classList.add('search')
-    nav.classList.add('search-moving')
-    clearTimeout(lastEvent)
-    lastEvent = setTimeout(() => nav.classList.remove('search-moving'), 600)
-    header.closeAll()
-    if (document.querySelector('.up')) {
-      getElement('main').style.pointerEvents = 'none'
-    }
-    input.placeholder = activeHolder
-    if (!fetched) {
-      if (!fetching) {
-        fetechData()
+
+    let html = `<div class="search-results-count">${countHtml}</div>`;
+
+    results.forEach((result) => {
+      // Highlight matching text
+      let title = result.title || "无标题";
+      let content = result.content || "";
+
+      // Simple highlight for title
+      if (title.toLowerCase().includes(query)) {
+        const regex = new RegExp(`(${query})`, "gi");
+        title = title.replace(regex, "<mark>$1</mark>");
       }
-      waiting = true
-    }
-  }
-  function EscapeSearch() {
-    if (!nav.classList.contains('search')) {
-      return
-    }
-    nav.classList.remove('search')
-    nav.classList.add('search-moving')
-    clearTimeout(lastEvent)
-    lastEvent = setTimeout(() => nav.classList.remove('search-moving'), 600)
-    onPopupClose()
-    input.value = ''
-    input.placeholder = blurHolder
-    document.removeEventListener('mouseup', EscapeSearch)
-    waiting = false
-    getElement('main').style.pointerEvents = ''
-    input.blur()
-  }
-  input.addEventListener('keyup', () => {
-    nav.classList.add('search')
-    inputEventFunction()
-  })
-  input.addEventListener('focus', () => {
-    StartSearch()
-  })
-  input.addEventListener('blur', event => {
-    if (!event.relatedTarget ||
-      event.relatedTarget.parentElement !== getElement('#search-result')) {
-      EscapeSearch()
-    }
-  })
-  popup.addEventListener('focusout', event => {
-    if (!event.relatedTarget ||
-      (event.relatedTarget !== input &&
-        event.relatedTarget.parentElement !== getElement('#search-result'))) {
-      EscapeSearch()
-    }
-  })
-  document.addEventListener('keyup', event => {
-    if (event.key === 'Escape') {
-      EscapeSearch()
-    } else if (event.key === 'f' && 
-      !['INPUT', 'TEXTAREA'].includes(event.target.tagName)) {
-      if (!document.querySelector('.up')) {
-        getElement('.navBtn').classList.remove('hide')
-        header.open()
+
+      // Truncate and highlight content
+      if (content.length > 150) {
+        content = content.substring(0, 150) + "...";
       }
-      StartSearch()
-      input.focus()
-    }
-  })
-  document.addEventListener('click', event => {
-    if (event.target.tagName === 'A' ||
-      event.target.parentElement.tagName === 'A') {
-      EscapeSearch()
-    }
-  })
-})()
+
+      if (content.toLowerCase().includes(query)) {
+        const regex = new RegExp(`(${query})`, "gi");
+        content = content.replace(regex, "<mark>$1</mark>");
+      }
+
+      // Add result item to HTML
+      html += `
+        <div class="search-result-item">
+          <a href="${result.url}" class="search-result-link">
+            <h3 class="search-result-title">${title}</h3>
+            <p class="search-result-content">${content}</p>
+          </a>
+        </div>
+      `;
+    });
+
+    searchResults.innerHTML = html;
+  }
+}
