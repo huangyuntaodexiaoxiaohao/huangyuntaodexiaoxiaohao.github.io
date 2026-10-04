@@ -52,7 +52,7 @@
   --tag-background-color: #1a1a22;
   --card-background-color: #121218;
 }
-</style><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div class="blog-cover" id="blog-cover"><div class="cover-bg" id="cover-bg-container"><canvas class="bg-slide active" id="refraction-canvas-1"></canvas><canvas class="bg-slide" id="refraction-canvas-2"></canvas><div class="cover-overlay"></div></div><div class="cover-content"><h1 class="cover-title" id="animated-title"></h1><p class="cover-author" id="animated-author"> </p></div><div class="cover-start-btn" id="start-journey"><span id="start-journey-text"> </span><i class="fas fa-chevron-down bouncing-arrow"></i></div></div><script>(function() {
+</style><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div class="blog-cover" id="blog-cover"><div class="cover-bg" id="cover-bg-container"><canvas class="bg-slide active" id="refraction-canvas-1"></canvas><canvas class="bg-slide" id="refraction-canvas-2"></canvas><video class="bg-video" id="cover-video-1" autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline"></video><video class="bg-video" id="cover-video-2" autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline"></video><div class="cover-overlay"></div></div><div class="cover-content"><h1 class="cover-title" id="animated-title"></h1><p class="cover-author" id="animated-author"> </p></div><div class="cover-start-btn" id="start-journey"><span id="start-journey-text"> </span><i class="fas fa-chevron-down bouncing-arrow"></i></div></div><script>(function() {
   var cover = document.getElementById('blog-cover');
   if (!cover) return;
   
@@ -83,6 +83,16 @@
   opacity: 0; transition: opacity 1.5s ease-in-out; 
 }
 .bg-slide.active { opacity: 1; }
+
+/* ★★★ 封面视频样式：居中显示、约占屏幕一半，保持完整画面 ★★★ */
+.bg-video {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(50vw, 600px); height: min(50vh, 600px);
+  object-fit: contain; opacity: 0; transition: opacity 1.5s ease-in-out;
+  z-index: 1; background: transparent;
+}
+.bg-video.active { opacity: 1; }
 
 .cover-overlay {
   position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -150,11 +160,38 @@ const cover = document.getElementById('blog-cover');
 if (cover && cover.style.display !== 'none') {
   const startBtn = document.getElementById('start-journey');
   
+  // ★★★ 封面视频开场模式：配置了 videos 就启用视频轮播，否则走原 WebGL 图片轮播 ★★★
+  const coverVideos = ["/videos/pendulum-doubao.mp4","/videos/coin-doubao.mp4"];
+  if (coverVideos.length > 0) {
+    const v1 = document.getElementById('cover-video-1');
+    const v2 = document.getElementById('cover-video-2');
+    const vids = [v1, v2];
+    let videoTimer = null;
+    // ★★★ 每次进入封面，随机播放一个视频（不再轮播）★★★
+    const pick = Math.floor(Math.random() * coverVideos.length);
+    const active = vids[pick % 2];
+    active.src = coverVideos[pick % coverVideos.length];
+    active.play().catch(() => {});
+    active.classList.add('active');
+
+    const closeCover = (e) => {
+      if (e && e.cancelable) e.preventDefault();
+      cover.classList.add('slide-up');
+      sessionStorage.setItem('hasSeenCover', 'true');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        cover.style.display = 'none';
+        v1.pause(); v2.pause();
+      }, 800);
+    };
+    startBtn.addEventListener('click', closeCover);
+    startBtn.addEventListener('touchstart', closeCover, { passive: false });
+  } else {
   import('https://cdn.jsdelivr.net/npm/threejs-components@0.0.30/build/backgrounds/liquid1.min.js').then((module) => {
     const LiquidBackground = module.default;
 
     // ★★★ 动态读取配置文件中的轮播图数组，如果没配提供默认图 ★★★
-    const coverImages = ["/images/gm/a/a1.jpg","/images/gm/a/a2.jpg","/images/gm/a/a3.jpg"];
+    const coverImages = ["/images/gm/a/a1.jpg","/images/gm/a/a3.jpg","/images/gm/a/a3.png"];
     
     const canvas1 = document.getElementById('refraction-canvas-1');
     const canvas2 = document.getElementById('refraction-canvas-2');
@@ -219,6 +256,7 @@ if (cover && cover.style.display !== 'none') {
     startBtn.addEventListener('click', closeCover);
     startBtn.addEventListener('touchstart', closeCover, { passive: false });
   });
+  }
 
   // =======================
   // ★ 翻译处理：向全局 lang-switch 请求数据 ★
@@ -249,7 +287,7 @@ if (cover && cover.style.display !== 'none') {
   // ★★★ 从配置文件动态获取文字 (依然保留原先的语言翻译支持机制) ★★★
   const configTitle = "欢迎来到灰雾之上";
   const configAuthor = "LingYun";
-  const configBtn = "进入塔罗会";
+  const configBtn = "进入源堡";
 
   // 稍微延迟 100ms 等待 lang-switch 注册好全局 window.i18n
   setTimeout(() => {
