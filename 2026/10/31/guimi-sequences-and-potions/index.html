@@ -1,0 +1,551 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta name="theme-color" content="#ffffff"><meta name="msapplication-navbutton-color" content="#ffffff"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><title>LingYun的博客</title><script>(function() {
+  // 【修改点 1】头部脚本：如果本地存储为空(从未设置过)，默认开启暗色(true)
+  var savedDarkMode = localStorage.getItem('darkMode');
+  var shouldBeDark = savedDarkMode === null ? true : savedDarkMode === 'true';
+  
+  if (shouldBeDark) {
+    document.documentElement.classList.add('dark-mode');
+  }
+})();
+</script><script>if (window.parent !== window) {
+  document.documentElement.classList.add('is-iframe');
+}
+</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Playfair+Display:wght@400;500;600;700&amp;family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><link rel="icon" href="/images/gm/c/c1.jpg"><link rel="stylesheet" href="/css/main.css?v=1793526489375">
+<link rel="stylesheet" href="/css/tags.css">
+
+<link rel="stylesheet" href="/css/categories.css">
+
+<link rel="stylesheet" href="/css/highlight.css">
+
+<link rel="stylesheet" href="/css/toc.css">
+
+<link rel="stylesheet" href="/css/image-zoom.css">
+
+<link rel="stylesheet" href="/css/share.css">
+
+<link rel="stylesheet" href="/css/mobile-nav.css">
+
+<link rel="stylesheet" href="/css/search.css">
+
+<link rel="stylesheet" href="/css/scrollbar.css">
+
+<link rel="stylesheet" href="/css/timeline.css">
+
+<link rel="stylesheet" href="/css/animations.css">
+
+<link rel="stylesheet" href="/css/ai-theme.css">
+
+<link rel="stylesheet" href="/css/loading-animation.css">
+
+<link rel="stylesheet" href="/css/article-modal.css">
+
+<link rel="stylesheet" href="/css/music-player.css">
+<link rel="stylesheet" href="/css/pet.css?v=20261127"><!-- 条件加载关于页面样式--><style>:root {
+  --primary-color: #ffffff;
+  --secondary-color: #8a8a8a;
+  --accent-color: #c9a86a;
+  --background-color: #0b0b0f;
+  --text-color: #e8e4d8;
+  --overlay-color: rgba(0, 0, 0, 0.75);
+  --tag-background-color: #1a1a22;
+  --card-background-color: #121218;
+}
+</style><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"><meta name="generator" content="Hexo 8.1.2"></head><body><div class="blog-cover" id="blog-cover"><div class="cover-bg" id="cover-bg-container"><canvas class="bg-slide active" id="refraction-canvas-1"></canvas><canvas class="bg-slide" id="refraction-canvas-2"></canvas><video class="bg-video" id="cover-video-1" autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline"></video><video class="bg-video" id="cover-video-2" autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline"></video><div class="cover-overlay"></div></div><div class="cover-content"><h1 class="cover-title" id="animated-title"></h1><p class="cover-author" id="animated-author"> </p></div><div class="cover-start-btn" id="start-journey"><span id="start-journey-text"> </span><i class="fas fa-chevron-down bouncing-arrow"></i></div></div><script>(function() {
+  var cover = document.getElementById('blog-cover');
+  if (!cover) return;
+  
+  // 如果当前是在 iframe/模态窗口中，或者用户已经点过“开始旅行”了
+  if (window.self !== window.top || sessionStorage.getItem('hasSeenCover') === 'true') {
+    // 立即隐藏，避免任何闪烁和遮挡
+    cover.style.display = 'none';
+  } else {
+    // 否则锁定背景滚动，等待动画模块加载
+    document.body.style.overflow = 'hidden';
+  }
+})();
+</script><style>.blog-cover {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  z-index: 9999999; display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1); 
+  overflow: hidden; background: #000;
+}
+.blog-cover.slide-up { transform: translateY(-100%); }
+
+.cover-bg {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+}
+
+.bg-slide {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  opacity: 0; transition: opacity 1.5s ease-in-out; 
+}
+.bg-slide.active { opacity: 1; }
+
+/* ★★★ 封面视频样式：居中显示、约占屏幕一半，保持完整画面 ★★★ */
+.bg-video {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(50vw, 600px); height: min(50vh, 600px);
+  object-fit: contain; opacity: 0; transition: opacity 1.5s ease-in-out;
+  z-index: 1; background: transparent;
+}
+.bg-video.active { opacity: 1; }
+
+.cover-overlay {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.4); z-index: 2; pointer-events: none;
+}
+
+.cover-content { text-align: center; z-index: 10; pointer-events: none; }
+
+.cover-title, .cover-author {
+  font-family: var(--font-secondary, 'Playfair Display', serif);
+  margin: 0;
+  color: var(--accent-color, #ff6b6b);
+  text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+.cover-title { font-size: 4rem; letter-spacing: 5px; font-weight: 800; }
+.cover-author { font-size: 2rem; letter-spacing: 3px; font-weight: 500; margin-top: 25px; }
+
+.pop-wrapper {
+  display: inline-block; opacity: 0; transform: scale(0.3) translateY(30px);
+  animation: pop-in 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+.wave-inner {
+  display: inline-block;
+  animation: wave-jitter 2.5s ease-in-out infinite;
+}
+
+.cover-start-btn {
+  position: absolute; bottom: 50px; display: flex; flex-direction: column;
+  align-items: center; color: #fff; cursor: pointer; z-index: 10;
+  transition: color 0.3s ease, transform 0.3s ease; pointer-events: auto;
+  padding: 10px 20px;
+}
+.cover-start-btn:hover { color: var(--accent-color, #ff6b6b); transform: scale(1.05); }
+.cover-start-btn span {
+  font-size: 1.2rem; margin-bottom: 10px; font-weight: 500;
+  letter-spacing: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+.bouncing-arrow { font-size: 2.5rem; animation: float-bounce 2s infinite; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6)); }
+
+@keyframes pop-in { to { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes wave-jitter {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  50% { transform: translateY(-12px); opacity: 0.35; }
+}
+@keyframes float-bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-15px); }
+  60% { transform: translateY(-7px); }
+}
+
+/* ★★★ 手机端适配修改 ★★★ */
+@media (max-width: 768px) {
+  .cover-title { font-size: 2rem; letter-spacing: 2px; }
+  .cover-author { font-size: 1.2rem; margin-top: 15px; }
+  .bouncing-arrow { font-size: 2rem; }
+  
+  .cover-start-btn { 
+    bottom: 12vh; /* 调高按钮，防止被手机浏览器底部导航栏遮挡 */
+    padding: 20px 40px; /* 增大点击热区 */
+  }
+  .cover-start-btn span { font-size: 1rem; }
+}
+</style><script type="module">// 只有当封面没有被前置脚本 display: none 掉时，才加载沉重的 WebGL 引擎
+const cover = document.getElementById('blog-cover');
+if (cover && cover.style.display !== 'none') {
+  const startBtn = document.getElementById('start-journey');
+  
+  // ★★★ 封面视频开场模式：配置了 videos 就启用视频轮播，否则走原 WebGL 图片轮播 ★★★
+  const coverVideos = ["/videos/pendulum-doubao.mp4","/videos/coin-doubao.mp4"];
+  if (coverVideos.length > 0) {
+    const v1 = document.getElementById('cover-video-1');
+    const v2 = document.getElementById('cover-video-2');
+    const vids = [v1, v2];
+    let videoTimer = null;
+    // ★★★ 每次进入封面，随机播放一个视频（不再轮播）★★★
+    const pick = Math.floor(Math.random() * coverVideos.length);
+    const active = vids[pick % 2];
+    active.src = coverVideos[pick % coverVideos.length];
+    active.play().catch(() => {});
+    active.classList.add('active');
+
+    const closeCover = (e) => {
+      if (e && e.cancelable) e.preventDefault();
+      cover.classList.add('slide-up');
+      sessionStorage.setItem('hasSeenCover', 'true');
+      document.body.style.overflow = '';
+      setTimeout(() => {
+        cover.style.display = 'none';
+        v1.pause(); v2.pause();
+      }, 800);
+    };
+    startBtn.addEventListener('click', closeCover);
+    startBtn.addEventListener('touchstart', closeCover, { passive: false });
+  } else {
+  import('https://cdn.jsdelivr.net/npm/threejs-components@0.0.30/build/backgrounds/liquid1.min.js').then((module) => {
+    const LiquidBackground = module.default;
+
+    // ★★★ 动态读取配置文件中的轮播图数组，如果没配提供默认图 ★★★
+    const coverImages = ["/images/gm/a/a1.jpg","/images/gm/a/a3.jpg","/images/gm/a/a3.png"];
+    
+    const canvas1 = document.getElementById('refraction-canvas-1');
+    const canvas2 = document.getElementById('refraction-canvas-2');
+    
+    const setupApp = (canvas) => {
+      const app = LiquidBackground(canvas);
+      app.liquidPlane.material.metalness = 0.35;
+      app.liquidPlane.material.roughness = 0.45;
+      app.liquidPlane.uniforms.displacementScale.value = 2;
+      app.setRain(false);
+      return app;
+    }
+
+    const app1 = setupApp(canvas1);
+    const app2 = setupApp(canvas2);
+
+    let currentSlide = 0;
+    let activeApp = 1;
+    
+    if (coverImages.length > 0) {
+      app1.loadImage(coverImages[0]);
+    }
+    if (coverImages.length > 1) {
+      app2.loadImage(coverImages[1]);
+    }
+
+    let slideTimer = null;
+    if (coverImages.length > 1) {
+      slideTimer = setInterval(() => {
+        const nextSlide = (currentSlide + 1) % coverImages.length;
+        
+        if (activeApp === 1) {
+          canvas1.classList.remove('active');
+          canvas2.classList.add('active');
+          activeApp = 2;
+          setTimeout(() => app1.loadImage(coverImages[(nextSlide + 1) % coverImages.length]), 1500);
+        } else {
+          canvas2.classList.remove('active');
+          canvas1.classList.add('active');
+          activeApp = 1;
+          setTimeout(() => app2.loadImage(coverImages[(nextSlide + 1) % coverImages.length]), 1500);
+        }
+        currentSlide = nextSlide;
+      }, 5000); 
+    }
+
+    // 绑定关闭封面的事件 (兼容电脑点击和手机触摸)
+    const closeCover = (e) => {
+      if (e && e.cancelable) e.preventDefault();
+      cover.classList.add('slide-up');
+      sessionStorage.setItem('hasSeenCover', 'true');
+      document.body.style.overflow = '';
+      
+      setTimeout(() => {
+        cover.style.display = 'none';
+        if (slideTimer) clearInterval(slideTimer);
+        if (app1.dispose) app1.dispose();
+        if (app2.dispose) app2.dispose();
+      }, 800);
+    };
+
+    startBtn.addEventListener('click', closeCover);
+    startBtn.addEventListener('touchstart', closeCover, { passive: false });
+  });
+  }
+
+  // =======================
+  // ★ 翻译处理：向全局 lang-switch 请求数据 ★
+  // =======================
+  const splitAndAnimateText = (text, container, popBaseDelay = 0) => {
+    container.innerHTML = ''; // 清空内容
+    text.split('').forEach((char, index) => {
+      if (char === ' ') {
+        const space = document.createElement('span');
+        space.innerHTML = '&nbsp;';
+        container.appendChild(space);
+        return;
+      }
+      const wrapper = document.createElement('span');
+      wrapper.className = 'pop-wrapper';
+      wrapper.style.animationDelay = `${popBaseDelay + index * 0.05}s`;
+      
+      const inner = document.createElement('span');
+      inner.textContent = char;
+      inner.className = 'wave-inner';
+      inner.style.animationDelay = `${index * 0.15}s`; 
+      
+      wrapper.appendChild(inner);
+      container.appendChild(wrapper);
+    });
+  };
+
+  // ★★★ 从配置文件动态获取文字 (依然保留原先的语言翻译支持机制) ★★★
+  const configTitle = "欢迎来到灰雾之上";
+  const configAuthor = "LingYun";
+  const configBtn = "进入源堡";
+
+  // 稍微延迟 100ms 等待 lang-switch 注册好全局 window.i18n
+  setTimeout(() => {
+    const titleStr = (window.i18n && window.i18n.get) ? window.i18n.get(configTitle) : configTitle;
+    const authorStr = (window.i18n && window.i18n.get) ? window.i18n.get(configAuthor) : configAuthor;
+    const btnStr = (window.i18n && window.i18n.get) ? window.i18n.get(configBtn) : configBtn;
+
+    document.getElementById('start-journey-text').textContent = btnStr;
+    splitAndAnimateText(titleStr, document.getElementById('animated-title'), 0);
+    splitAndAnimateText(authorStr, document.getElementById('animated-author'), 0.5);
+  }, 100);
+}</script><div id="app"><header class="header navbar-bubble"><nav class="nav"><div class="nav-container"><div class="nav-logo"><a href="/"><span class="nav-title">LingYun的博客</span></a></div><div class="nav-menu"><a class="nav-item" href="/">首页</a><a class="nav-item" href="/about/">关于</a><a class="nav-item" href="/archives/">归档</a><a class="nav-item" href="/categories/">分类</a><a class="nav-item" href="/tags/">标签</a><!-- 搜索按钮--><div class="search-toggle"><i class="fas fa-search"></i></div></div><div class="nav-toggle"><span></span><span></span><span></span></div></div></nav></header><div class="search-overlay"><div class="search-container"><div class="search-form"><input class="search-input" type="text" placeholder="搜索文章..."/><div class="search-close">×</div></div><div class="search-results"></div></div></div><main class="main"><div class="post-wrapper"><div class="toc-sidebar"><div class="toc-container"><div class="toc-title">目录</div><div class="toc-content" id="table-of-contents"><!-- Table of contents will be generated by JavaScript--></div></div></div><article class="post-container"><div class="post-header"><div class="post-cover"><img src="/images/gm/b/b8.jpg" alt="诡秘之主：二十二条途径，一杯魔药的晋升之路"/></div><div class="post-meta"><div class="post-category"><i class="fas fa-folder-open" style="margin-right: 5px"></i><a href="/categories/%E8%AF%A1%E7%A7%98%E4%B9%8B%E4%B8%BB/">诡秘之主</a></div><div class="post-date"><i class="far fa-calendar-alt" style="margin-right: 5px"></i><time datetime="2026-10-31T12:00:00.000Z">2026-10-31</time></div><div class="post-author"><i class="fas fa-user" style="margin-right: 5px"></i><span>LingYun</span></div></div><h1 class="post-title">诡秘之主：二十二条途径，一杯魔药的晋升之路</h1><div class="post-tags"><a class="tag" href="/tags/%E8%AF%A1%E7%A7%98%E4%B9%8B%E4%B8%BB/"><i class="fas fa-tag" style="margin-right: 3px"> </i>诡秘之主</a><a class="tag" href="/tags/%E5%BA%8F%E5%88%97%E9%80%94%E5%BE%84/"><i class="fas fa-tag" style="margin-right: 3px"> </i>序列途径</a><a class="tag" href="/tags/%E9%AD%94%E8%8D%AF/"><i class="fas fa-tag" style="margin-right: 3px"> </i>魔药</a><a class="tag" href="/tags/%E6%89%AE%E6%BC%94%E6%B3%95/"><i class="fas fa-tag" style="margin-right: 3px"> </i>扮演法</a></div></div><!-- AI摘要模块容器--><div id="post-ai-container"></div><div class="post-content"><h1 id="诡秘之主：二十二条途径，一杯魔药的晋升之路"><a href="#诡秘之主：二十二条途径，一杯魔药的晋升之路" class="headerlink" title="诡秘之主：二十二条途径，一杯魔药的晋升之路"></a>诡秘之主：二十二条途径，一杯魔药的晋升之路</h1><p>在这个世界，力量从不靠修炼而来。它藏在一条条配方里，混着不可思议的材料，盛在杯中，一口饮下，从此踏上非凡之路——也踏上通往疯狂的路。</p>
+<p>这就是《诡秘之主》最迷人的设定：<strong>序列途径</strong>与<strong>魔药体系</strong>。今天把它彻底讲清楚。</p>
+<h2 id="序列是什么"><a href="#序列是什么" class="headerlink" title="序列是什么"></a>序列是什么</h2><p>一切非凡力量，都源于”最初造物主”的分裂与亵渎石板上的记载。世界共有 <strong>二十二条神之途径</strong>，每条途径从 <strong>序列 9</strong> 起步，一路晋升到 <strong>序列 0</strong> 成为真神，共十个等级，对应 <strong>二百二十种魔药</strong>。</p>
+<ul>
+<li>序列 9 是最低门槛，凡人喝了魔药，就成了非凡者</li>
+<li>序列 4 及以上被称为”半神”</li>
+<li>序列 0 即真神，同一途径正常情况下只能有一位序列 0 或三位序列 1</li>
+</ul>
+<h2 id="晋升的三大规则"><a href="#晋升的三大规则" class="headerlink" title="晋升的三大规则"></a>晋升的三大规则</h2><table>
+<thead>
+<tr>
+<th>机制</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>魔药</td>
+<td>晋升必须喝下对应序列的魔药，材料多为超凡生物或神奇物品</td>
+</tr>
+<tr>
+<td>扮演法</td>
+<td>喝完魔药要”扮演”序列名——解读魔药名称的核心意象，总结扮演守则，贴合它生活，才能消化魔药、避免失控</td>
+</tr>
+<tr>
+<td>仪式</td>
+<td>序列 5 以上晋升必须辅以特定仪式，靠精神锚定扛住特性聚合的冲击</td>
+</tr>
+</tbody></table>
+<p>高阶非凡者越往上走，越被非凡特性侵蚀，变得冷酷、漠视生命，所以还需要”锚”（最常用的是凡人的信仰）来维系人性。</p>
+<h2 id="二十二条途径全表"><a href="#二十二条途径全表" class="headerlink" title="二十二条途径全表"></a>二十二条途径全表</h2><table>
+<thead>
+<tr>
+<th>途径</th>
+<th>序列9 → 序列0</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>占卜家</td>
+<td>占卜家 → 小丑 → 魔术师 → 无面人 → 秘偶大师 → 诡法师 → 古代学者 → 奇迹师 → 诡秘侍者 → <strong>愚者</strong></td>
+</tr>
+<tr>
+<td>学徒</td>
+<td>学徒 → 戏法大师 → 占星人 → 记录官 → 旅行家 → 秘法师 → 漫游者 → 旅法师 → 星之匙 → <strong>门</strong></td>
+</tr>
+<tr>
+<td>偷盗者</td>
+<td>偷盗者 → 诈骗师 → 解密学者 → 盗火人 → 窃梦家 → 寄生者 → 欺瞒导师 → 命运木马 → 时之虫 → <strong>错误</strong></td>
+</tr>
+<tr>
+<td>观众</td>
+<td>观众 → 读心者 → 心理医生 → 催眠师 → 梦境行者 → 操纵师 → 织梦人 → 洞察者 → 作家 → <strong>空想家</strong></td>
+</tr>
+<tr>
+<td>歌颂者</td>
+<td>歌颂者 → 祈光人 → 太阳神官 → 公证人 → 光之祭司 → 无暗者 → 正义导师 → 逐光者 → 纯白天使 → <strong>太阳</strong></td>
+</tr>
+<tr>
+<td>阅读者</td>
+<td>阅读者 → 推理学员 → 守知者 → 博学者 → 秘术导师 → 预言家 → 洞悉者 → 智天使 → 全知之眼 → <strong>白塔</strong></td>
+</tr>
+<tr>
+<td>水手</td>
+<td>水手 → 暴怒之民 → 航海家 → 风眷者 → 海洋歌者 → 灾难主祭 → 海王 → 天灾 → 雷神 → <strong>暴君</strong></td>
+</tr>
+<tr>
+<td>秘祈人</td>
+<td>秘祈人 → 倾听者 → 隐修士 → 蔷薇主教 → 牧羊人 → 黑骑士 → 三首圣堂 → 秽语长老 → 暗天使 → <strong>倒吊人</strong></td>
+</tr>
+<tr>
+<td>收尸人</td>
+<td>收尸人 → 掘墓人 → 通灵者 → 死灵导师 → 看门人 → 不死者 → 摆渡人 → 死亡执政官 → 苍白皇帝 → <strong>死神</strong></td>
+</tr>
+<tr>
+<td>不眠者</td>
+<td>不眠者 → 午夜诗人 → 梦魇 → 安魂师 → 灵巫 → 守夜人 → 恐惧主教 → 隐秘之仆 → 厄难骑士 → <strong>黑暗</strong></td>
+</tr>
+<tr>
+<td>战士</td>
+<td>战士 → 格斗家 → 武器大师 → 黎明骑士 → 守护者 → 猎魔者 → 银骑士 → 荣耀者 → 神明之手 → <strong>黄昏巨人</strong></td>
+</tr>
+<tr>
+<td>猎人</td>
+<td>猎人 → 挑衅者 → 纵火家 → 阴谋家 → 收割者 → 铁血骑士 → 战争主教 → 天气术士 → 征服者 → <strong>红祭司</strong></td>
+</tr>
+<tr>
+<td>刺客</td>
+<td>刺客 → 教唆者 → 女巫 → 欢愉 → 痛苦 → 绝望 → 不老 → 灾难 → 末日 → <strong>魔女</strong></td>
+</tr>
+<tr>
+<td>耕种者</td>
+<td>耕种者 → 医师 → 丰收祭司 → 生物学家 → 德鲁伊 → 古代炼金师 → 抬棺人 → 荒芜主母 → 自然行者 → <strong>母亲</strong></td>
+</tr>
+<tr>
+<td>药师</td>
+<td>药师 → 驯兽师 → 吸血鬼 → 魔药教授 → 深红学者 → 巫王 → 召唤大师 → 创生者 → 美神 → <strong>月亮</strong></td>
+</tr>
+<tr>
+<td>律师</td>
+<td>律师 → 野蛮人 → 贿赂者 → 腐化男爵 → 混乱导师 → 堕落伯爵 → 狂乱法师 → 熵之公爵 → 弑序亲王 → <strong>黑皇帝</strong></td>
+</tr>
+<tr>
+<td>仲裁人</td>
+<td>仲裁人 → 治安官 → 审讯者 → 法官 → 惩戒骑士 → 律令法师 → 混乱猎手 → 平衡者 → 秩序之手 → <strong>审判者</strong></td>
+</tr>
+<tr>
+<td>罪犯</td>
+<td>罪犯 → 折翼天使 → 连环杀手 → 恶魔 → 欲望使徒 → 魔鬼 → 呓语者 → 鲜血大公 → 污秽君王 → <strong>深渊</strong></td>
+</tr>
+<tr>
+<td>囚犯</td>
+<td>囚犯 → 疯子 → 狼人 → 活尸 → 怨魂 → 木偶 → 沉默门徒 → 古代邪物 → 神孽 → <strong>被缚者</strong></td>
+</tr>
+<tr>
+<td>窥秘人</td>
+<td>窥秘人 → 格斗学者 → 巫师 → 卷轴教授 → 星象师 → 神秘学家 → 预言大师 → 贤者 → 知识皇帝 → <strong>隐者</strong></td>
+</tr>
+<tr>
+<td>通识者</td>
+<td>通识者 → 考古学家 → 鉴定师 → 机械专家 → 天文学家 → 炼金术士 → 奥秘学者 → 知识导师 → 启蒙者 → <strong>完美者</strong></td>
+</tr>
+<tr>
+<td>怪物</td>
+<td>怪物 → 机器 → 幸运儿 → 灾祸教士 → 赢家 → 厄运法师 → 混乱行者 → 先知 → 水银之蛇 → <strong>命运之轮</strong></td>
+</tr>
+</tbody></table>
+<p>注意顺序：<strong>序列数字越小，位阶越高</strong>。序列 9 是最底层，序列 0 是神。</p>
+<h2 id="以”愚者”途径为例：主角的晋升实录"><a href="#以”愚者”途径为例：主角的晋升实录" class="headerlink" title="以”愚者”途径为例：主角的晋升实录"></a>以”愚者”途径为例：主角的晋升实录</h2><p>全书主线就是主角克莱恩沿占卜家途径一路登神，他走过的每一步，都是”魔药 + 扮演 + 仪式”的标准示范：</p>
+<table>
+<thead>
+<tr>
+<th>序列</th>
+<th>名称</th>
+<th>已知配方 &#x2F; 仪式关键</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>序列9</td>
+<td>占卜家</td>
+<td>主材料：拉瓦章鱼血液 10 毫升、星水晶 50 克</td>
+</tr>
+<tr>
+<td>序列8</td>
+<td>小丑</td>
+<td>配方未在书中完整公开；靠研读罗塞尔日记掌握扮演法消化</td>
+</tr>
+<tr>
+<td>序列7</td>
+<td>魔术师</td>
+<td>配方来自击杀非凡者后通灵所得；靠盛大表演与侠盗扮演消化</td>
+</tr>
+<tr>
+<td>序列6</td>
+<td>无面人</td>
+<td>获得”全黑之眼”特性辅助；晋升后获得改变容貌的能力</td>
+</tr>
+<tr>
+<td>序列5</td>
+<td>秘偶大师</td>
+<td><strong>晋升仪式：前往苏尼亚海寻找美人鱼</strong>（仪式关键，书中明确）</td>
+</tr>
+<tr>
+<td>序列4</td>
+<td>诡法师</td>
+<td>配方得自迷雾小镇中查拉图留下的后手</td>
+</tr>
+<tr>
+<td>序列3</td>
+<td>古代学者</td>
+<td>配方由黑夜女神赐予，于狂暴海域晋升</td>
+</tr>
+<tr>
+<td>序列2</td>
+<td>奇迹师</td>
+<td>配方与材料信息来自安提哥努斯家族笔记；靠实现愿望、创造奇迹消化</td>
+</tr>
+<tr>
+<td>序列1</td>
+<td>诡秘侍者</td>
+<td>于源堡复活后服魔药晋升，最终成双序列 1 天使之王</td>
+</tr>
+<tr>
+<td>序列0</td>
+<td>愚者</td>
+<td><strong>成神仪式：在霍纳奇斯山脉顶峰容纳唯一性</strong>，于诸神混战中登神</td>
+</tr>
+</tbody></table>
+<p>小说并未公开全部二百二十种魔药配方——很多途径的配方仍藏在迷雾里，这本身就是《诡秘之主》”神秘感”的一部分：非凡之路没有说明书，只有一杯杯喝下去才知道代价。</p>
+<h2 id="最后一句"><a href="#最后一句" class="headerlink" title="最后一句"></a>最后一句</h2><p>“魔药的名称，就是扮演的守则。”</p>
+<p>非凡特性会反过来侵蚀饮用者，扮演得越彻底，消化得越快，也越接近失控。这条路的尽头，究竟是成神，还是变成特性本身？——这就是愚者用自己的旅程回答的问题。</p>
+</div><!-- 初始化AI摘要--><!-- 传递TOC配置给前端--><script>// 创建全局TOC配置对象
+window.tocConfig = {
+  empty_toc_behavior: "placeholder"
+};
+</script><div class="post-navigation"><div class="post-nav prev"><a href="/2026/10/31/guimi-world-and-nations/"><span class="nav-label">← 上一篇</span><span class="nav-title">诡秘之主：灰雾之下的世界地图与诸国</span></a></div><div class="post-nav next"><a href="/2026/10/04/two/"><span class="nav-label">下一篇 →</span><span class="nav-title">第二篇博客</span></a></div></div><div class="post-share"><h3 class="share-title">分享这篇文章到</h3><div class="share-buttons"><a class="share-btn twitter" href="https://twitter.com/intent/tweet?text=%E8%AF%A1%E7%A7%98%E4%B9%8B%E4%B8%BB%EF%BC%9A%E4%BA%8C%E5%8D%81%E4%BA%8C%E6%9D%A1%E9%80%94%E5%BE%84%EF%BC%8C%E4%B8%80%E6%9D%AF%E9%AD%94%E8%8D%AF%E7%9A%84%E6%99%8B%E5%8D%87%E4%B9%8B%E8%B7%AF&amp;url=%2F2026%2F10%2F31%2Fguimi-sequences-and-potions%2F" target="_blank" rel="noopener"><span>推特</span></a><a class="share-btn facebook" href="https://www.facebook.com/sharer/sharer.php?u=%2F2026%2F10%2F31%2Fguimi-sequences-and-potions%2F" target="_blank" rel="noopener"><span>脸书</span></a><a class="share-btn linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=%2F2026%2F10%2F31%2Fguimi-sequences-and-potions%2F" target="_blank" rel="noopener"><span>领英</span></a><a class="share-btn wechat" href="#" data-wechat="/2026/10/31/guimi-sequences-and-potions/"><span>微信</span></a><a class="share-btn qq" href="https://connect.qq.com/widget/shareqq/index.html?url=%2F2026%2F10%2F31%2Fguimi-sequences-and-potions%2F&amp;title=%E8%AF%A1%E7%A7%98%E4%B9%8B%E4%B8%BB%EF%BC%9A%E4%BA%8C%E5%8D%81%E4%BA%8C%E6%9D%A1%E9%80%94%E5%BE%84%EF%BC%8C%E4%B8%80%E6%9D%AF%E9%AD%94%E8%8D%AF%E7%9A%84%E6%99%8B%E5%8D%87%E4%B9%8B%E8%B7%AF" target="_blank" rel="noopener"><span>QQ</span></a><a class="share-btn weibo" href="https://service.weibo.com/share/share.php?url=%2F2026%2F10%2F31%2Fguimi-sequences-and-potions%2F&amp;title=%E8%AF%A1%E7%A7%98%E4%B9%8B%E4%B8%BB%EF%BC%9A%E4%BA%8C%E5%8D%81%E4%BA%8C%E6%9D%A1%E9%80%94%E5%BE%84%EF%BC%8C%E4%B8%80%E6%9D%AF%E9%AD%94%E8%8D%AF%E7%9A%84%E6%99%8B%E5%8D%87%E4%B9%8B%E8%B7%AF" target="_blank" rel="noopener"><span>微博</span></a><a class="share-btn copy" href="#" data-copy="/2026/10/31/guimi-sequences-and-potions/"><span>点击复制链接</span></a></div></div></article></div></main><div id="waves-container"><svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto"><defs><path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"></path></defs><g class="parallax"><use xlink:href="#gentle-wave" x="48" y="0"></use><use xlink:href="#gentle-wave" x="48" y="3"></use><use xlink:href="#gentle-wave" x="48" y="5"></use><use xlink:href="#gentle-wave" x="48" y="7"></use></g></svg></div><footer class="footer"><div class="footer-bottom"><div class="footer-copyright">© 2026 LingYun. 灰雾之上的神秘主宰</div><!-- Footer centered image with link--></div></footer></div><!-- 立即应用暗色模式，避免页面闪烁--><script>(function() {
+  // 【修改点 2】底部脚本：同样逻辑，默认为 true
+  var savedDarkMode = localStorage.getItem('darkMode');
+  var shouldBeDark = savedDarkMode === null ? true : savedDarkMode === 'true';
+
+  if (shouldBeDark) {
+    document.body.classList.add('dark-mode');
+  }
+
+  // 防止页面闪烁，在DOM加载完成前设置一个初始类
+  document.documentElement.style.visibility = 'hidden';
+  document.addEventListener('DOMContentLoaded', function() {
+    document.documentElement.style.visibility = 'visible';
+  });
+})();
+</script>
+<script src="/js/main.js"></script>
+
+<script src="/js/tags.js"></script>
+
+<script src="/js/categories-accordion.js"></script>
+
+<script src="/js/highlight.js"></script>
+
+<script src="/js/load-more.js"></script>
+
+<script src="/js/header-scroll.js"></script>
+
+<script src="/js/toc.js"></script>
+
+<script src="/js/image-zoom.js"></script>
+
+<script src="/js/share.js"></script>
+
+<script src="/js/search.js"></script>
+
+<script src="/js/hide-inline-interaction.js"></script>
+
+<script src="/js/hide-toggle-interaction.js"></script>
+
+<script src="/js/dark-mode-sync.js"></script>
+
+<script src="/js/animations.js"></script>
+
+<script src="/js/ai-theme.js"></script>
+
+<script src="/js/loading-animation.js"></script>
+
+<script src="/js/article-modal.js"></script>
+
+<script src="/js/music-player.js"></script>
+<script src="/js/pet.js?v=20261127"></script><script>window.theme = {
+  features: {"dark_mode":true,"smooth_scroll":true,"back_to_top":true,"loading_animation":false},
+  code_block: {"height_limit":200,"enable_folding":true,"max_height":"300px","show_lang":true},
+  ai_summary: {"enable":false,"api_key":"","summary_directly":false,"ai_name":"然-AI","ai_introduce":"我是文章辅助AI: 然-AI，一个基于deepseek的强大语言模型，有什么可以帮到您？😊","ai_version":"deepseek-v4","buttons":["介绍自己","来点灵感","生成AI简介"]},
+  categories: {"layout":"accordion","accordion_animation":true,"show_empty_categories":true},
+  article_list: {"card_size":"normal","view_mode":"modal"}
+};
+</script><script src="/js/math-support.js"></script><script src="/js/click-tarot-doubao.js"></script><script src="/js/lang-switch.js"></script></body></html>
