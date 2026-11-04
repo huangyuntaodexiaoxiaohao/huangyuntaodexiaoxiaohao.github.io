@@ -62,8 +62,8 @@
   }
 
   var BLINK_PATCHES=[
-    {src:'/images/pet/pet_eyeL_closed.png',left:114,top:268,width:72,height:114},
-    {src:'/images/pet/pet_eyeR_closed.png',left:229,top:286,width:89,height:105}
+    {src:'/images/pet/pet_eyeL_closed.png',left:102,top:273,width:80,height:89},
+    {src:'/images/pet/pet_eyeR_closed.png',left:222,top:282,width:102,height:88}
   ];
   var patches=[];
   for(var m=0;m<BLINK_PATCHES.length;m++){
@@ -124,6 +124,8 @@
   function setFrame(idx,hold){
     if(frameTimer)clearTimeout(frameTimer);
     if(blinkTimer){clearTimeout(blinkTimer);blinkTimer=null;}
+    var prev=curFrame;
+    curFrame=idx;
     for(var k=0;k<patches.length;k++)patches[k].style.opacity='0';
     resetTransitions();
     for(var i=0;i<frames.length;i++){
@@ -133,7 +135,7 @@
     setPupils(idx===0);
     rim.style.display=(idx===0)?'block':'none';
     if(hold){
-      frameTimer=setTimeout(function(){setFrame(curFrame);},hold);
+      frameTimer=setTimeout(function(){setFrame(prev);},hold);
     }
   }
 
