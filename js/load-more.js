@@ -69,7 +69,7 @@ function initLoadMore() {
   if (articlesGrid) {
     const initialArticles = articlesGrid.querySelectorAll(".article-card");
     if (initialArticles.length > 0) {
-      applyRandomLayout(initialArticles, 0);
+      initialArticles.forEach((article) => article.classList.add("fade-in"));
     }
   }
 

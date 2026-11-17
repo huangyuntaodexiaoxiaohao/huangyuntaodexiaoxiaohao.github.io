@@ -481,33 +481,27 @@ p {
 .articles-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  /* 使用5列固定布局，增加列数使卡片变小 */
   grid-auto-flow: dense;
-  /* 密集排列，填充空白空间 */
   gap: var(--spacing-md);
-  /* 减小卡片间距 */
   margin-bottom: var(--spacing-2xl);
 }
 
 /* 响应式调整 */
 @media (max-width: 1200px) {
   .articles-grid {
-    grid-template-columns: repeat(4, 1fr);
-    /* 中等屏幕使用4列 */
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
 @media (max-width: 768px) {
   .articles-grid {
-    grid-template-columns: repeat(3, 1fr);
-    /* 小屏幕使用3列 */
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 480px) {
   .articles-grid {
-    grid-template-columns: repeat(2, 1fr);
-    /* 超小屏幕使用2列 */
+    grid-template-columns: 1fr;
   }
 }
 
@@ -640,8 +634,8 @@ p {
 .article-image {
   position: relative;
   overflow: hidden;
-  flex: 7;
-  /* 使用flex比例来控制图片区域占比 */
+  flex: 1 1 auto;
+  min-height: 0;
   /* 新增：手动添加圆角，替代父级 overflow: hidden 的效果 */
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
@@ -649,18 +643,18 @@ p {
 
 /* 大卡片的图片样式 - 保持7:3的占比 */
 .article-card--large .article-image {
-  flex: 7;
-  /* 使用flex比例来控制图片区域占比 */
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .article-card--tall .article-image {
-  flex: 7;
-  /* 使用flex比例来控制图片区域占比 */
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .article-card--wide .article-image {
-  flex: 7;
-  /* 使用flex比例来控制图片区域占比 */
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .article-image img {
@@ -678,8 +672,7 @@ p {
 .article-content {
   padding: var(--spacing-md);
   /* 减小内边距 */
-  flex: 3;
-  /* 使用flex比例来控制内容区域占比 */
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
 }
@@ -688,8 +681,7 @@ p {
 .article-card--large .article-content {
   padding: var(--spacing-lg);
   /* 减小内边距 */
-  flex: 3;
-  /* 使用flex比例来控制内容区域占比 */
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
 }
@@ -697,8 +689,7 @@ p {
 .article-card--tall .article-content {
   padding: var(--spacing-md);
   /* 减小内边距 */
-  flex: 3;
-  /* 使用flex比例来控制内容区域占比 */
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
 }
@@ -706,8 +697,7 @@ p {
 .article-card--wide .article-content {
   padding: var(--spacing-md);
   /* 减小内边距 */
-  flex: 3;
-  /* 使用flex比例来控制内容区域占比 */
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
 }
@@ -1597,6 +1587,15 @@ p {
 }
 
 /* ===== Responsive Design ===== */
+@media (max-width: 1200px) {
+  .article-card--large,
+  .article-card--wide,
+  .article-card--tall {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+}
+
 @media (max-width: 768px) {
   .nav-menu {
     display: none;
@@ -1608,10 +1607,6 @@ p {
 
   .hero-typing {
     font-size: 2rem;
-  }
-
-  .articles-grid {
-    grid-template-columns: 1fr;
   }
 
   .article-card--large,
