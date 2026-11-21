@@ -61,6 +61,29 @@ body {
   overflow-x: hidden;
 }
 
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: url(/images/gm/site-bg.jpg) 50% 50% / cover no-repeat;
+  z-index: 0;
+  pointer-events: none;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 11, 15, 0.35);
+  z-index: 0;
+  pointer-events: none;
+}
+
+#app {
+  position: relative;
+  z-index: 1;
+}
+
 a {
   color: var(--primary-color);
   text-decoration: none;
@@ -1786,7 +1809,7 @@ p {
 /* ===== Author Card Styles ===== */
 .author-card-section {
   padding: calc(var(--spacing-2xl) * 2) 0 var(--spacing-sm) 0;
-  background-color: var(--background-color);
+  background-color: transparent;
 }
 
 .author-card-container {
@@ -2202,7 +2225,7 @@ body.dark-mode .article-sticky {
 }
 
 body.dark-mode .footer {
-  background-color: #1a1a1a;
+  background-color: transparent;
   border-top-color: var(--border-color);
 }
 
@@ -3154,7 +3177,7 @@ body.dark-mode .parallax>use:nth-child(4) {
 
 /* 暗色模式 Footer */
 body.dark-mode .footer {
-  background-color: #1a1a1a !important;
+  background-color: transparent !important;
   border-top: none !important;
   color: #888 !important;
 }
